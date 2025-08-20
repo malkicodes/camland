@@ -27,7 +27,7 @@ const NETHER string = "db9238ed-8377-4600-9b17-c0ecd06c1111/0683de2a-99bb-4943-9
 var CUSTOM_CANVAS_QUERY string
 
 func getFilename(dimension string) string {
-	return "./output/camland_" + dimension + "_" + time.Now().UTC().Format(time.RFC3339) + ".png"
+	return "camland_" + dimension + "_" + time.Now().UTC().Format(time.RFC3339) + ".png"
 }
 
 func customCanvasChunkId(x0, y0 int) int {
