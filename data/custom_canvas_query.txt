@@ -1,0 +1,34 @@
+query world($worldId: Uuid, $slug: String, $layersFirst: Int!, $layersAfter: String!) {
+  world(worldId: $worldId, slug: $slug) {
+    ...UserWorldsEdgeFragment
+    __typename
+  }
+}
+
+fragment UserWorldsEdgeFragment on UserWorldsEdge {
+  node {
+    x0
+    y0
+    layersConnection(first: $layersFirst, after: $layersAfter) {
+      edges {
+        ...WorldLayersEdgeFragment
+        __typename
+      }
+    }
+  }
+}
+
+fragment WorldLayersEdgeFragment on WorldLayersEdge {
+  cursor
+  node {
+    ...LayerFragment
+    __typename
+  }
+  __typename
+}
+
+fragment LayerFragment on Layer {
+  id
+  worldId
+  __typename
+}
