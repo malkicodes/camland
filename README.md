@@ -5,8 +5,9 @@ A [PixelLand](https://pixel.land) map downloader written in [Go](https://go.dev)
 ## Installation
 
 1. Install [Go](https://go.dev) if you haven't already.
-2. Clone this repository.
-3. Run `go build` and put the resulting `camland` binary wherever you store your binaries.
+2. Get the binary by either:
+    - Cloning the repository and running `go build`, or
+    - Downloading the latest binary [here](https://github.com/malkicodes/camland/releases/latest)
 
 ## Usage
 
