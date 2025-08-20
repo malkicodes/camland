@@ -98,7 +98,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	if dimension == "overworld" {
+	switch dimension {
+	case "overworld":
 		fmt.Println("Downloading overworld...")
 
 		overworldImg := image.NewRGBA(image.Rect(0, 0, 12800, 12800))
@@ -154,7 +155,7 @@ func main() {
 				log.Fatalf("failed to encode image: %v", err)
 			}
 		}()
-	} else if dimension == "nether" {
+	case "nether":
 		fmt.Println("Downloading nether...")
 
 		netherImg := image.NewRGBA(image.Rect(0, 0, 2560, 2560))
@@ -210,7 +211,7 @@ func main() {
 				log.Fatalf("failed to encode image: %v", err)
 			}
 		}()
-	} else {
+	default:
 		fmt.Printf("Downloading dimension %s...\n", dimension)
 
 		body, err := json.Marshal(map[string]any{
