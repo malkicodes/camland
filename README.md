@@ -28,8 +28,9 @@ To download the nether, set the `-d` flag to `nether`.
 camland -d=nether
 ```
 
-CamLand also has some support for custom canvases. It can only download the first layer of the first frame of a canvas, but this support will be added in the future.
+CamLand also has some support for custom canvases.
 
 ```bash
 camland -d=xqu69hgq
+camland -d=s8lpvkwy -gif # Downloads as a GIF
 ```

@@ -19,9 +19,11 @@ import (
 	"github.com/fatih/color"
 )
 
-const BASE_URL string = "https://images2.pixel.land/0x0/"
+const IMAGES_BASE_URL string = "https://images2.pixel.land/0x0/"
 const OVERWORLD string = "db9238ed-8377-4600-9b17-c0ecd06c3f23/97a548ca-4ecc-4776-96f4-f82af16137b0"
 const NETHER string = "db9238ed-8377-4600-9b17-c0ecd06c1111/0683de2a-99bb-4943-9787-be88da4c0f9a"
+
+const SCREENSHOTS_BASE_URL string = "https://screenshots-4bn7kvgogq-uc.a.run.app/"
 
 //go:embed data/custom_canvas_query.txt
 var CUSTOM_CANVAS_QUERY string
@@ -30,11 +32,8 @@ func getFilename(dimension string) string {
 	return "camland_" + dimension + "_" + time.Now().UTC().Format(time.RFC3339) + ".png"
 }
 
-func customCanvasChunkId(x0, y0 int) int {
-	y := y0 / 512
-	x := x0 / 512
-
-	return y*128 + x
+func getFilenameGif(dimension string) string {
+	return "camland_" + dimension + "_" + time.Now().UTC().Format(time.RFC3339) + ".gif"
 }
 
 func fetchImage(url string) (image.Image, error) {
@@ -57,7 +56,7 @@ func getOverworldChunk(i int) (image.Image, error) {
 
 	chunkId := y*128 + x + 6708
 
-	imageUrl := BASE_URL + OVERWORLD + "/" + fmt.Sprint(chunkId) + ".png"
+	imageUrl := IMAGES_BASE_URL + OVERWORLD + "/" + fmt.Sprint(chunkId) + ".png"
 
 	return fetchImage(imageUrl)
 }
@@ -68,7 +67,7 @@ func getNetherChunk(i int) (image.Image, error) {
 
 	chunkId := y*128 + x + 7998
 
-	imageUrl := BASE_URL + NETHER + "/" + fmt.Sprint(chunkId) + ".png"
+	imageUrl := IMAGES_BASE_URL + NETHER + "/" + fmt.Sprint(chunkId) + ".png"
 
 	return fetchImage(imageUrl)
 }
@@ -76,6 +75,7 @@ func getNetherChunk(i int) (image.Image, error) {
 func main() {
 	dimensionFlag := flag.String("d", "overworld", "dimension: \"overworld\", \"nether\", or canvas id")
 	outputFlag := flag.String("o", "", "output file")
+	gifFlag := flag.Bool("gif", false, "if downloading custom dimension, save it as a gif")
 	maxDownloaders := flag.Int("max-downloaders", 32, "maximum concurrent download tasks")
 
 	flag.Parse()
@@ -83,6 +83,10 @@ func main() {
 	dimension := *dimensionFlag
 
 	filename := getFilename(dimension)
+
+	if *gifFlag {
+		filename = getFilenameGif(dimension)
+	}
 
 	if *outputFlag != "" {
 		filename = *outputFlag
@@ -213,9 +217,7 @@ func main() {
 			"operationName": "world",
 			"query":         CUSTOM_CANVAS_QUERY,
 			"variables": map[string]any{
-				"slug":        dimension,
-				"layersFirst": 50,
-				"layersAfter": "",
+				"slug": dimension,
 			},
 		})
 		if err != nil {
@@ -264,30 +266,17 @@ func main() {
 			os.Exit(1)
 		}
 
-		worldData := (respData["data"].(map[string]any))["world"].(map[string]any)["node"].(map[string]any)
+		worldId := respData["data"].(map[string]any)["world"].(map[string]any)["node"].(map[string]any)["id"].(string)
 
-		layers := (worldData["layersConnection"].(map[string]any))["edges"].([]any)
+		imageUrl := SCREENSHOTS_BASE_URL + worldId + "/" + "canvas.png"
 
-		if len(layers) > 0 {
-			color.Yellow("Warning: CamLand currently only gets the first layer in a canvas, and does not support custom canvases with multiple layers.")
+		if *gifFlag {
+			imageUrl = SCREENSHOTS_BASE_URL + worldId + "/" + "animation.gif"
 		}
 
-		layer := layers[0].(map[string]any)["node"].(map[string]any)
+		println(imageUrl)
 
-		worldId := layer["worldId"].(string)
-		layerId := layer["id"].(string)
-
-		fmt.Println("World ID: " + worldId)
-		fmt.Println("Layer ID: " + layerId)
-
-		x0 := int(worldData["x0"].(float64))
-		y0 := int(worldData["y0"].(float64))
-		chunkId := customCanvasChunkId(x0, y0) // always 8256?
-
-		fmt.Printf("Chunk ID: %d.png\n", chunkId)
-
-		imageUrl := BASE_URL + worldId + "/" + layerId + "/" + fmt.Sprint(chunkId) + ".png"
-
+		fmt.Println("Sending request for canvas image...")
 		resp, err = http.Get(imageUrl)
 		if err != nil {
 			color.Red("error in image response: %s\n", err)
