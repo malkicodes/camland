@@ -23,4 +23,7 @@
 !*/
 
 # Also include changes in the data directory
-!data/*
+!data/**/*
+
+# And the .github directory
+!.github/**/*
