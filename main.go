@@ -10,7 +10,6 @@ import (
 	"image/draw"
 	"image/png"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"sync"
@@ -152,7 +151,8 @@ func main() {
 
 			err = png.Encode(file, overworldImg)
 			if err != nil {
-				log.Fatalf("failed to encode image: %v", err)
+				color.Red("failed to encode image: %v", err)
+				os.Exit(1)
 			}
 		}()
 	case "nether":
@@ -208,7 +208,8 @@ func main() {
 
 			err = png.Encode(file, netherImg)
 			if err != nil {
-				log.Fatalf("failed to encode image: %v", err)
+				color.Red("failed to encode image: %v", err)
+				os.Exit(1)
 			}
 		}()
 	default:
