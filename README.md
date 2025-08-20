@@ -17,10 +17,11 @@ To download the overworld, just run the program!
 camland
 ```
 
-You can also specify an output filename using the `-o` flag.
+You can also specify an output filename or directory using the `-o` flag.
 
 ```bash
-camland -o=output.png
+camland -o=output.png # Saves to output.png
+camland -o=images/ # Saves to images/camland_overworld_<TIMESTAMP>.png
 ```
 
 To download the nether, set the `-d` flag to `nether`.

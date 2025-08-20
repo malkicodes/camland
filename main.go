@@ -89,12 +89,19 @@ func main() {
 
 	if *outputFlag != "" {
 		filename = *outputFlag
-	}
 
-	err := os.MkdirAll("./output", 0750)
-	if err != nil {
-		fmt.Printf("error creating directory: %s\n", err)
-		os.Exit(1)
+		if filename[len(filename)-1] == '/' {
+			err := os.MkdirAll(filename, os.ModePerm)
+			if err != nil {
+				fmt.Printf("error creating directory: %s\n", err)
+			}
+
+			if *gifFlag {
+				filename += getFilenameGif(dimension)
+			} else {
+				filename += getFilename(dimension)
+			}
+		}
 	}
 
 	switch dimension {
