@@ -306,4 +306,6 @@ func main() {
 	}
 
 	color.Green("Wrote image to " + filename)
+
+	os.Exit(0)
 }
